@@ -5,53 +5,63 @@ layout: learn
 
 # Debugging Node.js
 
-This guide will help you get started debugging your Node.js apps and scripts.
+* goal
+  * debugging your Node.js apps & scripts
 
 ## Enable Inspector
 
-When started with the `--inspect` switch, a Node.js process listens for a
-debugging client. By default, it will listen at host and port 127.0.0.1:9229.
-Each process is also assigned a unique [UUID][].
+* `--inspect`
+  * Node.js process
+    * -- listens (by default "127.0.0.1:9229") for a -- debugging client
+    * -- assign an -- unique [UUID][]
 
-Inspector clients must know and specify host address, port, and UUID to connect.
-A full URL will look something like
-`ws://127.0.0.1:9229/0f2c936f-b1cd-4ac9-aab3-f63b0f33d55e`.
+* Inspector clients -- must -- know
+  * host address,
+  * port,
+  * UUID
+  ```
+  # ws://hostAdress:port/UUID
+  ws://127.0.0.1:9229/0f2c936f-b1cd-4ac9-aab3-f63b0f33d55e
+  ```
 
-Node.js will also start listening for debugging messages if it receives a
-`SIGUSR1` signal. (`SIGUSR1` is not available on Windows.) In Node.js 7 and
-earlier, this activates the legacy Debugger API. In Node.js 8 and later, it will
-activate the Inspector API.
+* Node.js -- can listen for -- debugging messages
+  * requirements
+    * `SIGUSR1` signal
+      * NOT available | Windows
+  * |
+    * Node.js v7-
+      * -- activates the -- legacy Debugger API
+    * Node.js v8+
+      * -- activates the -- Inspector API
 
 ## Security Implications
 
-Since the debugger has full access to the Node.js execution environment, a
-malicious actor able to connect to this port may be able to execute arbitrary
-code on behalf of the Node.js process. It is important to understand the security
-implications of exposing the debugger port on public and private networks.
+* 👀if malicious actor -- connect to -- this port -> can execute arbitrary code -- on behalf of the -- Node.js process👀
+  * Reason: 🧠 debugger -- has FULL access to the -- Node.js execution environment
 
-### Exposing the debug port publicly is unsafe
+### Exposing the debug port PUBLICLY
 
-If the debugger is bound to a public IP address, or to 0.0.0.0, any clients that
-can reach your IP address will be able to connect to the debugger without any
-restriction and will be able to run arbitrary code.
+* scenario
+  * debugger -- is bound to a --
+    * public IP address
+    * 0.0.0.0
 
-By default `node --inspect` binds to 127.0.0.1. You explicitly need to provide a
-public IP address or 0.0.0.0, etc., if you intend to allow external connections
-to the debugger. Doing so may expose you to a potentially significant security
-threat. We suggest you ensure appropriate firewalls and access controls in place
-to prevent a security exposure.
+* if clients -- can reach -- your IP address -> able to connect | debugger, WITHOUT restriction
+  * == run arbitrary code
 
-See the section on '[Enabling remote debugging scenarios](#enabling-remote-debugging-scenarios)' on some advice on how
-to safely allow remote debugger clients to connect.
+* recommendations
+  * ensure firewalls & access controls
 
-### Local applications have full access to the inspector
+* see [Enabling remote debugging scenarios](#enabling-remote-debugging-scenarios)
 
-Even if you bind the inspector port to 127.0.0.1 (the default), any applications
-running locally on your machine will have unrestricted access. This is by design
-to allow local debuggers to be able to attach conveniently.
+### Local applications -- have -- FULL access to the inspector
+
+* scenario
+  * applications running locally & default inspector port (127.0.0.1)
 
 ### Browsers, WebSockets and same-origin policy
 
+* TODO:
 Websites open in a web-browser can make WebSocket and HTTP requests under the
 browser security model. An initial HTTP connection is necessary to obtain a
 unique debugger session id. The same-origin-policy prevents websites from being
@@ -66,21 +76,31 @@ either the IP address or by using ssh tunnels as described below.
 
 ## Inspector Clients
 
-A minimal CLI debugger is available with `node inspect myscript.js`.
-Several commercial and open source tools can also connect to the Node.js Inspector.
+* `node inspect myscript.js`
+  * == minimal CLI debugger
+  * -- can be connected by --
+    * commercial tools
+    * open source tools
 
 ### Chrome DevTools 55+, Microsoft Edge
 
-- **Option 1**: Open `chrome://inspect` in a Chromium-based
-  browser or `edge://inspect` in Edge. Click the Configure button and ensure your target host and port
-  are listed.
-- **Option 2**: Copy the `devtoolsFrontendUrl` from the output of `/json/list`
-  (see above) or the --inspect hint text and paste into Chrome.
+* ways
+  * **Option 1**
+    * | Chromium-based browser, open `chrome://inspect` OR | Edge, open `edge://inspect`
+    * Configure button, ensure your target host & port are listed
+  * **Option 2**
+    * copy
+      * `/json/list`'s `devtoolsFrontendUrl` output OR
+      * --inspect hint text
+    * paste | Chrome
 
-See https://github.com/ChromeDevTools/devtools-frontend, https://www.microsoftedgeinsider.com for more information.
+* see
+  * https://github.com/ChromeDevTools/devtools-frontend,
+  * https://www.microsoftedgeinsider.com
 
 ### Visual Studio Code 1.10+
 
+* TODO:
 - In the Debug panel, click the settings icon to open `.vscode/launch.json`.
   Select "Node.js" for initial setup.
 
@@ -91,12 +111,14 @@ See https://github.com/microsoft/vscode for more information.
 - Choose "Debug > Start Debugging" from the menu or hit F5.
 - [Detailed instructions](https://github.com/Microsoft/nodejstools/wiki/Debugging).
 
-### JetBrains WebStorm and other JetBrains IDEs
+### JetBrains IDEs
 
-- Create a new Node.js debug configuration and hit Debug. `--inspect` will be used
-  by default for Node.js 7+. To disable uncheck `js.debugger.node.use.inspect` in
-  the IDE Registry. To learn more about running and debugging Node.js in WebStorm and other JetBrains IDEs,
-  check out [WebStorm online help](https://www.jetbrains.com/help/webstorm/running-and-debugging-node-js.html).
+* create a NEW Node.js debug configuration
+* hit Debug
+* `--inspect` -- used by default by -- Node.js 7+
+  * if you want to disable -> uncheck `js.debugger.node.use.inspect` | IDE Registry
+
+* see [WebStorm online help](https://www.jetbrains.com/help/webstorm/running-and-debugging-node-js.html)
 
 ### chrome-remote-interface
 
@@ -119,12 +141,12 @@ See https://eclipse.org/eclipseide for more information.
 
 ## Command-line options
 
-The following table lists the impact of various runtime flags on debugging:
+* runtime flags -- about -- debugging
 
 | Flag                               | Meaning                                                                                                                                               |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| --inspect                          | Enable inspector agent; Listen on default address and port (127.0.0.1:9229)                                                                           |
-| --inspect=[host:port]              | Enable inspector agent; Bind to address or hostname host (default: 127.0.0.1); Listen on port port (default: 9229)                                    |
+|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --inspect                          | Enable inspector agent <br/> Listen \| default address and port (127.0.0.1:9229)                                                                      |
+| --inspect=[host:port]              | Enable inspector agent <br/> bind -- to -- address OR hostname host (default: 127.0.0.1) <br/> listen \| default port (default: 9229)                 |
 | --inspect-brk                      | Enable inspector agent; Listen on default address and port (127.0.0.1:9229); Break before user code starts                                            |
 | --inspect-brk=[host:port]          | Enable inspector agent; Bind to address or hostname host (default: 127.0.0.1); Listen on port port (default: 9229); Break before user code starts     |
 | --inspect-wait                     | Enable inspector agent; Listen on default address and port (127.0.0.1:9229); Wait for debugger to be attached.                                        |
@@ -162,9 +184,11 @@ which should be able to debug as if the Node.js application was running locally.
 
 ## Legacy Debugger
 
-**The legacy debugger has been deprecated as of Node.js 7.7.0. Please use
-`--inspect` and Inspector instead.**
+* ⚠️deprecated -- from -- Node.js v7.7.0+ ⚠️
+* recommendations
+  * use `--inspect` & Inspector
 
+* TODO:
 When started with the **--debug** or **--debug-brk** switches in version 7 and
 earlier, Node.js listens for debugging commands defined by the discontinued
 V8 Debugging Protocol on a TCP port, by default `5858`. Any debugger client
